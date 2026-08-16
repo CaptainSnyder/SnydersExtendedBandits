@@ -14,10 +14,17 @@ local function DistressDoSpawn(player, item, cid)
     end
     local size = groupMin + ZombRand(groupMax - groupMin + 1)
 
+    -- Offset the call-in point the same way the scheduler places ambush
+    -- spawns (BanditServerSpawner.lua) instead of the player's own tile -
+    -- generateSpawnPointHere() puts every bandit at the exact point it's
+    -- given, so without this the whole squad spawned stacked on the player.
+    local theta = ZombRandFloat(0, 2 * math.pi)
+    local nearDist = 55 + ZombRand(10)
+
     local args = {}
     args.cid = cid
-    args.x = player:getX()
-    args.y = player:getY()
+    args.x = player:getX() + (nearDist * math.cos(theta))
+    args.y = player:getY() + (nearDist * math.sin(theta))
     args.z = player:getZ()
     args.size = size
     sendClientCommand(player, 'Spawner', 'Clan', args)
