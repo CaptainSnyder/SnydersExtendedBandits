@@ -4,3 +4,8 @@ option BanditsForceSpawnPatch.RequireAdminForSpecificClan = {
     type = boolean, default = true,
     page = BanditsForceSpawnPatch, translation = BanditsForceSpawnPatch.RequireAdminForSpecificClan, _tooltip = BanditsForceSpawnPatch.RequireAdminForSpecificClanTooltip,
 }
+
+option BanditsForceSpawnPatch.DistressBeaconsCraftable = {
+    type = boolean, default = true,
+    page = BanditsForceSpawnPatch, translation = BanditsForceSpawnPatch.DistressBeaconsCraftable, _tooltip = BanditsForceSpawnPatch.DistressBeaconsCraftableTooltip,
+}
