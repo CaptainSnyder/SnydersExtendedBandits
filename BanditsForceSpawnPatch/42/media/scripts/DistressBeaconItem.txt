@@ -3,7 +3,18 @@ module Base
     item DistressBeacon
     {
         DisplayCategory = Communications,
-        DisplayName = Distress Beacon,
+        DisplayName = Hostile Distress Beacon,
+        Icon = WalkieTalkieMilitary,
+        Weight = 0.5,
+        Type = Normal,
+        StaticModel = WalkieTalkieUSArmy,
+        WorldStaticModel = WalkieTalkieUSArmy,
+    }
+
+    item FriendlyDistressBeacon
+    {
+        DisplayCategory = Communications,
+        DisplayName = Friendly Distress Beacon,
         Icon = WalkieTalkieMilitary,
         Weight = 0.5,
         Type = Normal,

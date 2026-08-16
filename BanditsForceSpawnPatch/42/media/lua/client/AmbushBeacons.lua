@@ -1,7 +1,13 @@
--- Distress Beacon: a single consumable item. Right-click it in inventory
--- for a submenu listing every clan with the "Assault" Spawn AI option
--- enabled - pulled live from clan data, not a hardcoded list. Uses each
--- clan's actual configured group-size settings.
+-- Distress Beacons: two consumable items. Hostile Distress Beacon calls in
+-- a clan's "Assault" squad, Friendly Distress Beacon calls in a clan's
+-- "Companions". Each right-click menu lists every clan with the matching
+-- Spawn AI option enabled - pulled live from clan data, not a hardcoded
+-- list. Uses each clan's actual configured group-size settings.
+
+local BEACON_TYPES = {
+    ["Base.DistressBeacon"] = { flag = "assault", label = "Use Hostile Distress Beacon" },
+    ["Base.FriendlyDistressBeacon"] = { flag = "companion", label = "Use Friendly Distress Beacon" },
+}
 
 local function DistressDoSpawn(player, item, cid)
     BanditCustom.Load()
@@ -36,36 +42,38 @@ local function DistressContextMenu(playerNum, context, items)
     local player = getSpecificPlayer(playerNum)
     if not player then return end
 
-    local foundItem = nil
-    for _, v in ipairs(items) do
-        local invItem = v
-        if not instanceof(v, "InventoryItem") then
-            invItem = v.items and v.items[1] or nil
+    for fullType, config in pairs(BEACON_TYPES) do
+        local foundItem = nil
+        for _, v in ipairs(items) do
+            local invItem = v
+            if not instanceof(v, "InventoryItem") then
+                invItem = v.items and v.items[1] or nil
+            end
+            if invItem and invItem:getFullType() == fullType then
+                foundItem = invItem
+                break
+            end
         end
-        if invItem and invItem:getFullType() == "Base.DistressBeacon" then
-            foundItem = invItem
-            break
+
+        if foundItem then
+            BanditCustom.Load()
+            local allClans = BanditCustom.ClanGetAllSorted()
+            local matchingClans = {}
+            for cid, clan in pairs(allClans) do
+                if clan.spawn and clan.spawn[config.flag] then
+                    table.insert(matchingClans, { cid = cid, name = clan.general.name })
+                end
+            end
+
+            if #matchingClans > 0 then
+                local option = context:addOption(config.label)
+                local subMenu = context:getNew(context)
+                context:addSubMenu(option, subMenu)
+                for _, c in ipairs(matchingClans) do
+                    subMenu:addOption("Call In " .. c.name, player, DistressDoSpawn, foundItem, c.cid)
+                end
+            end
         end
-    end
-
-    if not foundItem then return end
-
-    BanditCustom.Load()
-    local allClans = BanditCustom.ClanGetAllSorted()
-    local assaultClans = {}
-    for cid, clan in pairs(allClans) do
-        if clan.spawn and clan.spawn.assault then
-            table.insert(assaultClans, { cid = cid, name = clan.general.name })
-        end
-    end
-
-    if #assaultClans == 0 then return end
-
-    local option = context:addOption("Use Distress Beacon")
-    local subMenu = context:getNew(context)
-    context:addSubMenu(option, subMenu)
-    for _, c in ipairs(assaultClans) do
-        subMenu:addOption("Call In " .. c.name, player, DistressDoSpawn, foundItem, c.cid)
     end
 end
 
