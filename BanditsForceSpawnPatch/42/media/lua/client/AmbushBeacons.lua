@@ -3,14 +3,32 @@
 -- "Companions". Each right-click menu lists every clan with the matching
 -- Spawn AI option enabled - pulled live from clan data, not a hardcoded
 -- list. Uses each clan's actual configured group-size settings.
+--
+-- Sandbox option BanditsForceSpawnPatch.RequireAdminForSpecificClan (default
+-- true) gates who gets to pick which clan shows up: admins always can, other
+-- players only get a random matching clan while it's enabled. Disabling it
+-- gives everyone the full choice (plus an explicit Random option).
 
 local BEACON_TYPES = {
     ["Base.DistressBeacon"] = { flag = "assault", label = "Use Hostile Distress Beacon" },
     ["Base.FriendlyDistressBeacon"] = { flag = "companion", label = "Use Friendly Distress Beacon" },
 }
 
-local function DistressDoSpawn(player, item, cid)
+local function DistressDoSpawn(player, item, cid, flag)
     BanditCustom.Load()
+
+    if not cid then
+        local allClans = BanditCustom.ClanGetAllSorted()
+        local candidates = {}
+        for candidateCid, clan in pairs(allClans) do
+            if clan.spawn and clan.spawn[flag] then
+                table.insert(candidates, candidateCid)
+            end
+        end
+        if #candidates == 0 then return end
+        cid = candidates[ZombRand(#candidates) + 1]
+    end
+
     local clan = BanditCustom.ClanGet(cid)
     local groupMin = 1
     local groupMax = 1
@@ -42,6 +60,12 @@ local function DistressContextMenu(playerNum, context, items)
     local player = getSpecificPlayer(playerNum)
     if not player then return end
 
+    local requireAdmin = true
+    if SandboxVars.BanditsForceSpawnPatch and SandboxVars.BanditsForceSpawnPatch.RequireAdminForSpecificClan ~= nil then
+        requireAdmin = SandboxVars.BanditsForceSpawnPatch.RequireAdminForSpecificClan
+    end
+    local giveFullChoice = isAdmin() or not requireAdmin
+
     for fullType, config in pairs(BEACON_TYPES) do
         local foundItem = nil
         for _, v in ipairs(items) do
@@ -66,11 +90,16 @@ local function DistressContextMenu(playerNum, context, items)
             end
 
             if #matchingClans > 0 then
-                local option = context:addOption(config.label)
-                local subMenu = context:getNew(context)
-                context:addSubMenu(option, subMenu)
-                for _, c in ipairs(matchingClans) do
-                    subMenu:addOption("Call In " .. c.name, player, DistressDoSpawn, foundItem, c.cid)
+                if giveFullChoice then
+                    local option = context:addOption(config.label)
+                    local subMenu = context:getNew(context)
+                    context:addSubMenu(option, subMenu)
+                    subMenu:addOption("Random", player, DistressDoSpawn, foundItem, nil, config.flag)
+                    for _, c in ipairs(matchingClans) do
+                        subMenu:addOption("Call In " .. c.name, player, DistressDoSpawn, foundItem, c.cid, config.flag)
+                    end
+                else
+                    context:addOption(config.label, player, DistressDoSpawn, foundItem, nil, config.flag)
                 end
             end
         end

@@ -1,0 +1,6 @@
+VERSION = 1,
+
+option BanditsForceSpawnPatch.RequireAdminForSpecificClan = {
+    type = boolean, default = true,
+    page = BanditsForceSpawnPatch, translation = BanditsForceSpawnPatch.RequireAdminForSpecificClan, _tooltip = BanditsForceSpawnPatch.RequireAdminForSpecificClanTooltip,
+}
