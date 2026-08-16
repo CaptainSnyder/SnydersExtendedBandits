@@ -1,0 +1,6 @@
+version=1
+id=3784848246
+title=Snyder's Extended Bandits
+description=[h1]Snyder's Extended Bandits[/h1]
+tags=Build 42;Framework;Misc;Multiplayer
+visibility=public

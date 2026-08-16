@@ -1,0 +1,4 @@
+name=Custom Dialogue Creator
+id=CustomDialogueCreator
+description=Adds a "Custom Dialogue" editor to each clan in the Bandits Creator. Lets you write custom lines tied to a trigger (spotted, taking damage, reloading, breaching, etc.) with a chance to play instead of the mod's default generic dialogue. Custom lines are clan-specific and local-storage only.
+require=Bandits2,BanditsCreator

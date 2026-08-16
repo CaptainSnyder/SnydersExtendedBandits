@@ -1,0 +1,13 @@
+module Base
+{
+    item DistressBeacon
+    {
+        DisplayCategory = Communications,
+        DisplayName = Distress Beacon,
+        Icon = WalkieTalkieMilitary,
+        Weight = 0.5,
+        Type = Normal,
+        StaticModel = WalkieTalkieUSArmy,
+        WorldStaticModel = WalkieTalkieUSArmy,
+    }
+}
