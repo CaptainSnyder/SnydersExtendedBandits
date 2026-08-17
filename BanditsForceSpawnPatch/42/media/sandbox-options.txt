@@ -9,3 +9,8 @@ option BanditsForceSpawnPatch.DistressBeaconsCraftable = {
     type = boolean, default = true,
     page = BanditsForceSpawnPatch, translation = BanditsForceSpawnPatch.DistressBeaconsCraftable, _tooltip = BanditsForceSpawnPatch.DistressBeaconsCraftableTooltip,
 }
+
+option BanditsForceSpawnPatch.DebugMode = {
+    type = boolean, default = false,
+    page = BanditsForceSpawnPatch, translation = BanditsForceSpawnPatch.DebugMode, _tooltip = BanditsForceSpawnPatch.DebugModeTooltip,
+}

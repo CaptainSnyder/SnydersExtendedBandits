@@ -1,3 +1,14 @@
+-- Gated by the BanditsForceSpawnPatch.DebugMode sandbox option (default
+-- off) instead of being stripped out - flip it on in-game to get the same
+-- diagnostic trace used to debug the Distress Beacon spawn path.
+local function BeaconDebugPrint(msg)
+    if SandboxVars.BanditsForceSpawnPatch and SandboxVars.BanditsForceSpawnPatch.DebugMode then
+        print(msg)
+    end
+end
+
+BeaconDebugPrint("[BEACON-DEBUG] BanditServerSpawner.lua (BanditsForceSpawnPatch) loading now")
+
 local LogLevel = 0
 
 local function daysInMonth(month)
@@ -442,20 +453,29 @@ local function spawnGroup(spawnPoints, args)
     local groupSize = #spawnPoints
 
     local cid = args.cid
-    if not cid then return end
+    if not cid then
+        BeaconDebugPrint("[BEACON-DEBUG] spawnGroup aborted: no cid in args")
+        return
+    end
 
     local clan = BanditCustom.ClanGet(cid)
-    if not clan then return end
+    if not clan then
+        BeaconDebugPrint("[BEACON-DEBUG] spawnGroup aborted: BanditCustom.ClanGet(" .. tostring(cid) .. ") returned nil - clan data not loaded server-side, or bad cid")
+        return
+    end
 
     local banditOptions = BanditCustom.GetFromClan(cid)
-    if not banditOptions then return end
+    if not banditOptions then
+        BeaconDebugPrint("[BEACON-DEBUG] spawnGroup aborted: BanditCustom.GetFromClan(" .. tostring(cid) .. ") returned nil - no bandit characters found for this clan")
+        return
+    end
 
     local keys = {}
     for key in pairs(banditOptions) do
         table.insert(keys, key)
     end
 
-    if LogLevel >= 3 then print ("[BANDITS] spawnGroup has bandit options " .. #keys) end
+    BeaconDebugPrint("[BEACON-DEBUG] spawnGroup has " .. #keys .. " bandit option(s) for clan " .. tostring(cid) .. ", groupSize=" .. tostring(groupSize))
 
     for i = #keys, 2, -1 do
         local j = ZombRand(i) + 1
@@ -487,6 +507,8 @@ local function spawnGroup(spawnPoints, args)
             local zombie = zombieList:get(0)
             banditize(zombie, bandit, clan, args)
             i = i + 1
+        else
+            BeaconDebugPrint("[BEACON-DEBUG] AddZombiesInOutfit returned 0 zombies at " .. tostring(sp.x) .. "," .. tostring(sp.y) .. "," .. tostring(sp.z) .. " for bandit " .. tostring(bid))
         end
     end
     return i - 1
@@ -1098,6 +1120,9 @@ local function checkEvent()
 end
 
 local function onClientCommand(module, command, player, args)
+    BeaconDebugPrint("[BEACON-DEBUG] onClientCommand received module=" .. tostring(module) .. " command=" .. tostring(command)
+        .. " BanditServer[module]=" .. tostring(BanditServer[module])
+        .. " BanditServer[module][command]=" .. tostring(BanditServer[module] and BanditServer[module][command]))
     if module == "Spawner" and BanditServer[module] and BanditServer[module][command] then
         local argStr = ""
         for k, v in pairs(args) do
@@ -1126,22 +1151,33 @@ end
 
 -- used for dedicated spawning by mods or debug
 BanditServer.Spawner.Clan = function(player, args)
-    if not args.cid then return end
+    if not args.cid then
+        BeaconDebugPrint("[BEACON-DEBUG] Spawner.Clan aborted: no args.cid")
+        return
+    end
     args.pid = BanditUtils.GetCharacterID(player)
 
     if not args.size then args.size = 1 end
     if not args.program then args.program = "Bandit" end
-    
+
     local spawnPoints = args.spawnPoints
     if not spawnPoints then
         if not args.x then args.x = player:getX() end
         if not args.y then args.y = player:getY() end
         if not args.z then args.z = player:getZ() end
+        BeaconDebugPrint("[BEACON-DEBUG] Spawner.Clan cid=" .. tostring(args.cid) .. " size=" .. tostring(args.size)
+            .. " target=" .. tostring(args.x) .. "," .. tostring(args.y) .. "," .. tostring(args.z)
+            .. " playerAt=" .. tostring(player:getX()) .. "," .. tostring(player:getY()))
         spawnPoints = generateSpawnPointHere(player, args.x, args.y, args.z, args.size)
+        BeaconDebugPrint("[BEACON-DEBUG] generateSpawnPointHere returned " .. #spawnPoints .. " point(s)")
     end
 
     if #spawnPoints > 0 then
-        spawnGroup(spawnPoints, args)
+        BeaconDebugPrint("[BEACON-DEBUG] calling spawnGroup with " .. #spawnPoints .. " point(s)")
+        local spawned = spawnGroup(spawnPoints, args)
+        BeaconDebugPrint("[BEACON-DEBUG] spawnGroup returned, bandits actually spawned=" .. tostring(spawned))
+    else
+        BeaconDebugPrint("[BEACON-DEBUG] NO SPAWN POINTS - target square not loaded, aborting silently (this is the vanilla behavior)")
     end
 end
 

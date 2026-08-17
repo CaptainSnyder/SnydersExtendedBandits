@@ -3,5 +3,7 @@
     "Sandbox_BanditsForceSpawnPatch.RequireAdminForSpecificClan": "Require Admin to call specific clans",
     "Sandbox_BanditsForceSpawnPatch.RequireAdminForSpecificClanTooltip": "When enabled, only admins can choose a specific clan with a Distress Beacon - everyone else always calls in a random matching clan. When disabled, all players can choose a specific clan or pick Random themselves.",
     "Sandbox_BanditsForceSpawnPatch.DistressBeaconsCraftable": "Distress Beacons Craftable",
-    "Sandbox_BanditsForceSpawnPatch.DistressBeaconsCraftableTooltip": "When enabled, players can craft both Distress Beacons at Electrical level 3. When disabled, the craft recipes are unavailable and beacons can only be found as loot or given by an admin."
+    "Sandbox_BanditsForceSpawnPatch.DistressBeaconsCraftableTooltip": "When enabled, players can craft both Distress Beacons at Electrical level 3. When disabled, the craft recipes are unavailable and beacons can only be found as loot or given by an admin.",
+    "Sandbox_BanditsForceSpawnPatch.DebugMode": "Debug Mode",
+    "Sandbox_BanditsForceSpawnPatch.DebugModeTooltip": "When enabled, prints detailed [BEACON-DEBUG] traces of Distress Beacon spawn attempts (target coordinates, spawn points found, clan/bandit lookups, final spawn count) to the server log. Off by default - only needed when diagnosing spawn issues."
 }
