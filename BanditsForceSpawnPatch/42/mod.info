@@ -1,4 +1,4 @@
 name=Bandits Force Spawn Patch
 id=BanditsForceSpawnPatch
 description=Local patch for the Bandits mod: makes the automatic spawn scheduler use lenient near-player placement instead of the strict 55-65 tile ring, which was failing due to unloaded/occupied tiles at that distance. Overrides BanditServerSpawner.lua - must load after Bandits2.
-require=Bandits2
+require=Bandits2,MoodleFramework

@@ -14,6 +14,35 @@ local BEACON_TYPES = {
     ["Base.FriendlyDistressBeacon"] = { flag = "companion", label = "Use Friendly Distress Beacon" },
 }
 
+-- Moodle showing which clan a beacon just called in, via MoodleFramework.
+-- Shows for MOODLE_DISPLAY_SECONDS then hides itself again.
+MF.createMoodle("DistressBeacon")
+local MOODLE_DISPLAY_SECONDS = 30
+local moodleHideAt = nil
+
+local function onTickHideDistressBeaconMoodle()
+    if not moodleHideAt then return end
+    if getTimestampMs() >= moodleHideAt then
+        local moodle = MF.getMoodle("DistressBeacon")
+        if moodle then moodle:setValue(0.5) end
+        moodleHideAt = nil
+        Events.OnTick.Remove(onTickHideDistressBeaconMoodle)
+    end
+end
+
+local function ShowDistressBeaconMoodle(clanName)
+    local moodle = MF.getMoodle("DistressBeacon")
+    if not moodle then return end
+    for lvl = 1, 4 do
+        moodle:setTitle(1, lvl, "Distress Beacon")
+        moodle:setDescription(1, lvl, "Called in: " .. tostring(clanName))
+    end
+    moodle:setValue(1.0)
+    moodleHideAt = getTimestampMs() + MOODLE_DISPLAY_SECONDS * 1000
+    Events.OnTick.Remove(onTickHideDistressBeaconMoodle)
+    Events.OnTick.Add(onTickHideDistressBeaconMoodle)
+end
+
 local function DistressDoSpawn(player, item, cid, flag)
     BanditCustom.Load()
 
@@ -37,6 +66,8 @@ local function DistressDoSpawn(player, item, cid, flag)
         groupMax = tonumber(clan.spawn.groupMax) or groupMin
     end
     local size = groupMin + ZombRand(groupMax - groupMin + 1)
+
+    ShowDistressBeaconMoodle(clan and clan.general and clan.general.name or "Unknown")
 
     -- Offset the call-in point the same way the scheduler places ambush
     -- spawns (BanditServerSpawner.lua) instead of the player's own tile -
