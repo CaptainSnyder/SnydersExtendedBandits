@@ -2,5 +2,42 @@ version=1
 id=3784848246
 title=Snyder's Extended Bandits
 description=[h1]Snyder's Extended Bandits[/h1]
+Two companion patches for the Bandits mod, bundled as one item.
+
+[hr][/hr]
+
+[h1]Bandits Force Spawn Patch[/h1]
+[list]
+[*] Fixes scheduled clan spawns failing to find a valid placement point
+[*] Adds two consumable Distress Beacon items under their own "Distress Beacons" inventory category:
+[list]
+[*] [b]Hostile Distress Beacon[/b] - calls in an armed squad from any clan with the "Assault" Spawn AI option enabled
+[*] [b]Friendly Distress Beacon[/b] - calls in a squad from any clan with the "Companions" Spawn AI option enabled
+[/list]
+[*] Both beacons are craftable at Electrical level 3, at a deliberately steep material cost so they can't be spammed
+[*] A moodle shows which clan just answered your call
+[/list]
+
+[b]Sandbox options[/b] (own page: "Bandits Force Spawn Patch"):
+[list]
+[*] Require Admin to call specific clans (default ON) - non-admins get a random matching clan; admins can always pick
+[*] Distress Beacons Craftable (default ON) - toggles both craft recipes on/off
+[*] Debug Mode (default OFF) - detailed spawn-attempt logging for troubleshooting
+[/list]
+
+[hr][/hr]
+
+[h1]Custom Dialogue Creator[/h1]
+[list]
+[*] Adds a "Custom Dialogue" screen to the Bandit Clan editor
+[*] Write clan-specific lines tied to triggers (spotted, taking damage, breach, reload, death, burning, random ambient chatter, and more)
+[*] Custom lines replace the generic dialogue for that clan when triggered
+[/list]
+
+[hr][/hr]
+
+[b]Requires:[/b] Bandits (Bandits2), Bandits Creator, and MoodleFramework
+[b]Mod IDs:[/b] BanditsForceSpawnPatch, CustomDialogueCreator
+
 tags=Build 42;Framework;Misc;Multiplayer
 visibility=public
