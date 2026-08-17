@@ -460,7 +460,16 @@ local function spawnGroup(spawnPoints, args)
 
     local clan = BanditCustom.ClanGet(cid)
     if not clan then
-        BeaconDebugPrint("[BEACON-DEBUG] spawnGroup aborted: BanditCustom.ClanGet(" .. tostring(cid) .. ") returned nil - clan data not loaded server-side, or bad cid")
+        -- Bandits2 only loads clan data once, on OnServerStarted, and its own
+        -- client-sync handler (ReceiveFromClient) can overwrite it entirely
+        -- when a client connects before its own data is ready. Retry once
+        -- with a forced reload instead of trusting it was already loaded.
+        BeaconDebugPrint("[BEACON-DEBUG] BanditCustom.ClanGet(" .. tostring(cid) .. ") returned nil, forcing a reload and retrying")
+        BanditCustom.Load()
+        clan = BanditCustom.ClanGet(cid)
+    end
+    if not clan then
+        BeaconDebugPrint("[BEACON-DEBUG] spawnGroup aborted: BanditCustom.ClanGet(" .. tostring(cid) .. ") returned nil even after reload - bad cid")
         return
     end
 
